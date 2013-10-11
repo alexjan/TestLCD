@@ -1,5 +1,5 @@
-#include <Atmel/AT892051.h>
-//#include <htc.h>
+//#include <Atmel/AT892051.h>
+#include <htc.h>
 			
 
 
@@ -9,16 +9,22 @@
 
 void DelayuS(unsigned char);
 void DelaymS(unsigned char);
+void FirstINIFunc(void);
+void putst(unsigned char *);
+
 
 void main(void){
+	FirstINIFunc();
+	putst("Hello\n");
+	
 	while (true){
 		DelaymS(10);
 //		if(true);
 	}
 }
 
-void DelayuS(unsigned char number){
-	while (--number);
+void DelayuS(unsigned char num){
+	while (--num);
 }
 
 void DelaymS(unsigned char number){

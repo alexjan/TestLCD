@@ -1,5 +1,5 @@
-#include <Atmel/AT89x051.h>
-//#include <htc.h>
+//#include <Atmel/AT89x051.h>
+#include <htc.h>
 
 // #define _AT89C2051
 #define HEAD_Stack 			0x70
@@ -52,11 +52,11 @@
 
 #define true 1
 #define false 0
-#define CLK P1_2  
-#define RS P1_3				//Registr Select  0 --> registr command, 1 --> registr data  
-#define CS P1_4				// Chip select 4015 --> strobe exec for 1 -> 0
-#define DataLo P3_4
-#define DataHi P1_3
+#define CLK P12  
+#define RS P13				//Registr Select  0 --> registr command, 1 --> registr data  
+#define CS P14				// Chip select 4015 --> strobe exec for 1 -> 0
+#define DataLo P34
+#define DataHi P13
 
 
 
@@ -169,42 +169,35 @@ void FirstINIFunc(void) {
 
 void InitLCD(void){
 	LcdWR(ClrScreen,Command);
-	DelaymS(15);
+	DelaymS(20);
 	LcdWR(FunctionSet & DataLenght8b & Num2lStr & Size5x7,Command);	
 	LcdWR(DispControl & DisplOn & CursLineOff & CursSquOff,Command);
 	LcdWR(ModeSet & DecCount & ShiftEn,Command);	
-    LcdWR(SetAdressCGRAM & 0x40,Command);
+  LcdWR(SetAdressCGRAM & 0x40,Command);
 	LcdWR(SetAdressDDRAM & 0x80,Command);
 }
 
 void LcdWR(unsigned char DataVar,unsigned char mode){
-	unsigned char count = 4;
-	
+	unsigned char count, DataVarLo;
 	CS = true;
-	#pragma SRC
-	#pragma asm
-			
-lab1:
-		CLR		_CLK						
-		MOV		A, _DataVar					
-		SWAP 	A
-	 	RLC		A
-		MOV 	_DataLo, CY
-		XCH		A, _DataVar
-		RLC		A
-		MOV		_DataHi, CY
-		XCH		A,_DataVar
-		SETB	_CLK
-		DJNZ	_count, lab1
-
-	#pragma endasm
-	
+	DataVarLo = DataVar << 4;
+	for(count=4;count>0;--count){
+		CLK = false;		
+		DataVarLo <<= 1;	
+		DataLo = CY;
+		DataVar <<= 1;
+		DataHi = CY;
+		CLK =true;
+	}
 	RS = mode; 
 	CS = false;
 	CS = true;
 }
 
-void printf(unsigned char *StringOut,unsigned char Position){
-	
+void putc(unsigned char Char){
+	LcdWR(Char,Data);
 }
 
+void putst(unsigned char *string){
+	while (*string != '\n')putc(*(++string));
+}

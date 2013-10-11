@@ -4,4 +4,4 @@
 --asmlist			\
 -S					\
 --summary=mem		\
-main.c 
+main.c Function.c 
