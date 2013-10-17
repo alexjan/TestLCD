@@ -1,7 +1,6 @@
---chip=AT89C2051 	\
+--chip=AT89C4051 	\
 --mode=pro			\
 --opt=all			\
 --asmlist			\
 -S					\
---summary=mem		\
 main.c Function.c 
