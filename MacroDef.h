@@ -1,4 +1,4 @@
-#define Keil
+#define Keil //HI-TECH
 
 #ifdef Keil 
 	#include <Atmel/AT892051.h>
@@ -7,8 +7,7 @@
 	#define StrobLcd P1_4				// Chip select 4015 --> strobe exec for 1 -> 0
 	#define Dta4015InLo P3_4
 	#define Dta4015InHi P1_3
-#else 
-
+#else
 	#ifdef HI-TECH 
 		#include <htc.h>
 		#define Clock4015 P12  	
@@ -19,7 +18,6 @@
 	#endif
 #endif	
 
-// #define _AT89C2051
 #define HEAD_Stack 			0x70
 
 /* List Command for LCD 44780*/

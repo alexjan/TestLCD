@@ -3,4 +3,5 @@
 --opt=all			\
 --asmlist			\
 -S					\
+--summary=file		\
 main.c Function.c 
