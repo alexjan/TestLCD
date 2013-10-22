@@ -7,6 +7,8 @@
 	#define StrobLcd P1_4				// Chip select 4015 --> strobe exec for 1 -> 0
 	#define Dta4015InLo P3_4
 	#define Dta4015InHi P1_3
+	#define KeybLine1 P1_6
+	#define KeybLine0 P1_7
 #else
 	#ifdef HI-TECH 
 		#include <htc.h>
@@ -15,6 +17,8 @@
 		#define StrobLcd P14				// Chip select 4015 --> strobe exec for 1 -> 0
 		#define Dta4015InLo P34
 		#define Dta4015InHi P13
+		#define KeybLine1 P16
+		#define KeybLine0 P17
 	#endif
 #endif	
 
@@ -65,9 +69,10 @@
 #define DispStrAdr1str 		0x80	
 #define DispStrAdr2str 		0xC0
 
-#define true 1
-#define false 0
+#define true 				1
+#define false 				0
 
-#define Command 			0
-#define Data 				1
+#define Command 			false
+#define Data 				true
+
 

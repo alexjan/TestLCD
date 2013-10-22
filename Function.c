@@ -1,13 +1,11 @@
 #include "MacroDef.h"
 
-
 void InitLCD(void);
 void LcdWR(unsigned char, unsigned char);
 void DelaymS(unsigned char);
 void DelayuS(unsigned char);
-
-const unsigned char Message1 = 1;
-
+void ClrScrn (void);
+void PutBCDlong(unsigned long);
 
 void FirstINIFunc(void) {
 
@@ -31,7 +29,6 @@ void FirstINIFunc(void) {
     //   |+-----------> KeybLine1
     //   +------------> KeybLine0
 
-    SP = HEAD_Stack;
 
     PSW = 0;
 
@@ -99,17 +96,17 @@ void FirstINIFunc(void) {
 //     TL1 = 0xF3;
 //     TH0 = 0x80;
 
-     InitLCD();
+    	 
+
 }
 
 void InitLCD(void){
-	LcdWR(ClrScreen,Command);
-	DelaymS(50);
+	ClrScrn();
 	LcdWR(FunctionSet & DataLenght8b & Num2lStr & Size5x7,Command);	
 	LcdWR(DispControl & DisplOn & CursLineOff & CursSquOff,Command);
 	LcdWR(ModeSet & IncCount & ShiftDis,Command);	
 	LcdWR(DispCursShift & CursorShift & RightShift,Command);
-	LcdWR(SetAdressCGRAM & 0x40,Command);
+//	LcdWR(SetAdressCGRAM & 0x40,Command);			// Not USE Function
 	LcdWR(SetAdressDDRAM & 0x80,Command);
 }
 
@@ -126,21 +123,57 @@ void LcdWR(unsigned char DataVar,unsigned char mode){
 	}	
 	CmdDtaLcd = mode;
 	StrobLcd = true;
-	StrobLcd = false; 	
-// 	while(1);
+	StrobLcd = false;
 }
 
+
 void putch(unsigned char Char){
+	if(Char == '\n')LcdWR(SetAdressDDRAM ^ 0x40 ,Command);
 	LcdWR(Char,Data);
 }
 
-// void putst(unsigned char *string){
-// 	static unsigned char CharCnt;
-// 	while (*string != '\n')	{
-// 		putch(*(++string));
-// 			if(++CharCnt & 0x1F > 15)	{
-// 				LcdWR(CharCnt ^= 0x40, Command);
-// 				CharCnt = 0;
-// 			}
-// 		}
-// }
+void DelayuS(unsigned char num){
+	while (--num);
+}
+
+void DelaymS(unsigned char number){
+	unsigned char i;
+	do{
+		for(i=4;i>0;--i)
+			DelayuS(246);
+	}while(--number);
+}
+
+void ClrScrn (void){
+	LcdWR(ClrScreen,Command);
+	DelaymS(10);
+}
+
+void PutBCDlong(unsigned long VarBCD){
+	if(VarBCD & 0xF00000)	putch((unsigned char)((VarBCD >> 20) & 0x0F) + 0x30);	
+	else putch(' ');
+	if(VarBCD & 0x0F0000)	putch((unsigned char)((VarBCD >> 16) & 0x0F) + 0x30);	
+	else putch(' ');
+	if(VarBCD & 0x00F000)	putch((unsigned char)((VarBCD >> 12) & 0x0F) + 0x30);	
+	else putch(' ');
+	putch(((unsigned char)((VarBCD >> 8) & 0x0F)) + 0x30);	
+	putch('.');
+	putch(((unsigned char)((VarBCD >> 4) & 0x0F)) + 0x30);	
+	putch(((unsigned char)(VarBCD  & 0x0F))+ 0x30);	
+}
+
+void putst(unsigned char *string){
+	static unsigned char CharCnt;
+	static 			bit Line1; 
+	do{
+		for(CharCnt=0;CharCnt<16;CharCnt++){
+			if(*string == '\n')break;
+			putch(*(string++));
+		}
+		(Line1 = !Line1) ? LcdWR(SetAdressDDRAM & 0xC0,Command) : LcdWR(SetAdressDDRAM & 0x80,Command);
+	}
+	while(Line1);
+}
+
+
+

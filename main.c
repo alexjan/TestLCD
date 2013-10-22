@@ -7,35 +7,35 @@ void putst(unsigned char *);
 void putch (unsigned char);
 void LcdWR(unsigned char, unsigned char);
 void InitLCD(void);
+void ClrScrn (void);
+void PutBCDlong (unsigned long);
 
+unsigned char mSecond;
 
+//  const unsigned char CharSet[33]=('A',0xA0,'B',0xA1,0xE0,'E',0xA3,0xA4,0xA5,0xA6,0x4B,'K',0x4D,'M',0x4F,'O',  				\
+//  								0x50,'P','C','T',0xAA,0x58,'X',0xAB,0xAc,0xE2,0xAD,0xAE,0x62,0xAF,0xB0,0xB1);
+
+// const unsigned char CharSetLowCase[]=(	0x61,0xB2,0xB3,0xB4,0xE3,0x65,0xB6,0xB7,0xB8,0xB9,0xBA,0xBB,0xBC,0xBD,0x6F,0xBE, 		\
+// 										0x70,0x63,0xBF,0x79,0xE4,0x78,0xE5,0xC0,0xC1,0xE6,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7);
+										
+										
 void main(void){
- 	unsigned char counter;
+ 	unsigned char counter,Var;
+	SP = HEAD_Stack;
+	DelaymS(100);
+  	FirstINIFunc();
+	InitLCD();
+	PutBCDlong(0x923545);
+	putch('\n');
+	PutBCDlong(0x236546);
+	putch('\n');
+	counter = 10;
+	while(counter--)DelaymS(250);
+	putst("New Line\n");
+	while(1);
+}
+
+void Timer0 (void) interrupt 1 using 2{
 	
-// 	DelaymS(100);
-// 	FirstINIFunc();
-//   	InitLCD();
-//  	for(counter=0;counter < 0x80;counter++){
-// 		LcdWR('8',1);
-// 		DelaymS(100);
-	LcdWR(0xC6,Command);
-	counter = 16;
-	while(counter--){
-		putch('2');
-	}
-// 	}
-}
-
-void DelayuS(unsigned char num){
-	while (--num);
-}
-
-void DelaymS(unsigned char number){
-	unsigned char i;
-	do{
-		for(i=4;i>0;--i)
-			DelayuS(246);
-	}while(--number);
-}
-
+} 
 
