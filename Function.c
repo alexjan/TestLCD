@@ -7,6 +7,9 @@ void DelayuS(unsigned char);
 void ClrScrn (void);
 void PutBCDlong(unsigned long);
 
+extern bit LineLCD;
+extern unsigned char code Kyrilica[];
+
 void FirstINIFunc(void) {
 
     P3 = 11111111;
@@ -101,8 +104,13 @@ void FirstINIFunc(void) {
 }
 
 void InitLCD(void){
-	ClrScrn();
-	LcdWR(FunctionSet & DataLenght8b & Num2lStr & Size5x7,Command);	
+	DelaymS(16);
+	LcdWR(FunctionSet & DataLenght8b & Num2lStr & Size5x7,Command);
+	DelaymS(5);
+	LcdWR(FunctionSet & DataLenght8b & Num2lStr & Size5x7,Command);
+	DelayuS(100);
+	LcdWR(FunctionSet & DataLenght8b & Num2lStr & Size5x7,Command);
+	ClrScrn();		
 	LcdWR(DispControl & DisplOn & CursLineOff & CursSquOff,Command);
 	LcdWR(ModeSet & IncCount & ShiftDis,Command);	
 	LcdWR(DispCursShift & CursorShift & RightShift,Command);
@@ -126,10 +134,13 @@ void LcdWR(unsigned char DataVar,unsigned char mode){
 	StrobLcd = false;
 }
 
-
 void putch(unsigned char Char){
-	if(Char == '\n')LcdWR(SetAdressDDRAM ^ 0x40 ,Command);
-	LcdWR(Char,Data);
+	if(Char > 0x7F) Char = Kyrilica[Char - 0xC0];
+	if(Char == '\n') {
+		LineLCD = ~LineLCD;
+		LineLCD ? LcdWR(SetAdressDDRAM & 0xC0,Command) : LcdWR(SetAdressDDRAM & 0x80,Command);
+	}
+	else LcdWR(Char,Data);
 }
 
 void DelayuS(unsigned char num){
@@ -163,17 +174,17 @@ void PutBCDlong(unsigned long VarBCD){
 }
 
 void putst(unsigned char *string){
-	static unsigned char CharCnt;
-	static 			bit Line1; 
+	unsigned char CharCnt = 0;
+	bit EndOfString = true; 
 	do{
-		for(CharCnt=0;CharCnt<16;CharCnt++){
-			if(*string == '\n')break;
-			putch(*(string++));
-		}
-		(Line1 = !Line1) ? LcdWR(SetAdressDDRAM & 0xC0,Command) : LcdWR(SetAdressDDRAM & 0x80,Command);
+		if(*string == '\n') EndOfString = false;
+		putch(*(string++));
+		if(++CharCnt > 15) {
+			CharCnt = 0;
+			LineLCD = ~LineLCD;
+			LineLCD ? LcdWR(SetAdressDDRAM & 0xC0,Command) : LcdWR(SetAdressDDRAM & 0x80,Command);
+		}	
 	}
-	while(Line1);
+	while(EndOfString);
 }
-
-
 
