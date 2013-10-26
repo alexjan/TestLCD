@@ -7,6 +7,9 @@ void DelayuS(unsigned char);
 void ClrScrn (void);
 void PutBCDlong(unsigned long);
 
+unsigned char code KeyCode[2][2][4] = {{'1','2','3','4'},{0,0,0,0,},{0,0,0,0},{0,0,0,0}};
+
+
 extern bit LineLCD;
 extern unsigned char code Kyrilica[];
 
@@ -21,7 +24,10 @@ void FirstINIFunc(void) {
     //   ||+----------> CashOutput
     //   |+-----------> ----------
     //   +------------> LedValve
-
+while(cnt--){
+		Clock4015 = false;
+		Clock4015 = true;
+	}
     P1 = 11111111;
     //   |||||||+-----> PowerTRK
     //   ||||||+------> Pump
@@ -157,7 +163,7 @@ void DelaymS(unsigned char number){
 
 void ClrScrn (void){
 	LcdWR(ClrScreen,Command);
-	DelaymS(10);
+	DelaymS(5);
 }
 
 void PutBCDlong(unsigned long VarBCD){
@@ -188,3 +194,43 @@ void putst(unsigned char *string){
 	while(EndOfString);
 }
 
+unsigned char scanch(void){
+	unsigned char cnt, Vari, ScanCnt;
+	bit PushButtom = false;
+	ScanCnt = 0;
+	StrobLcd = true;
+	Dta4015InLo = true;
+	Dta4015InHi = true;
+	cnt = 3;
+	while(cnt--){		
+		Clock4015 = false;
+		Clock4015 = true;
+	}
+	Dta4015InLo = false;
+	Clock4015 = false;
+	Clock4015 = true;
+	Dta4015InLo = true;
+		
+	do{
+		cnt = 0;	
+		do{
+			if(KeybLine0) {
+				Vari = KeyCode[cnt + ScanCnt];
+				PushButtom = true;
+			}
+			if(KeybLine1 && !PushButtom) {
+				Vari = KeyCode[cnt + ScanCnt + 4];
+				PushButtom = true;
+			}
+			Clock4015 = false;
+			Clock4015 = true;
+		}while((++cnt < 4) && !PushButtom);
+
+		Dta4015InHi = false;
+		Clock4015 = false;
+		Clock4015 = true;
+		Dta4015InHi = true;
+
+	}while(++ScanCnt < 2);
+	return Vari;
+}
