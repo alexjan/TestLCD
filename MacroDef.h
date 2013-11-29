@@ -2,23 +2,48 @@
 
 #ifdef Keil 
 	#include <Atmel/AT892051.h>
-	#define Clock4015 P1_2  
-	#define CmdDtaLcd P1_3				//Registr Select  0 --> registr command, 1 --> registr data  
-	#define StrobLcd P1_4				// Chip select 4015 --> strobe exec for 1 -> 0
-	#define Dta4015InLo P3_4
-	#define Dta4015InHi P1_3
-	#define KeybLine1 P1_6
-	#define KeybLine0 P1_7
+	
+	#define CtrlPowerMCU	P1_0
+	#define Pump			P1_1
+	#define Clock4015 		P1_2  
+	#define CmdDtaLcd 		P1_3				//Registr Select  0 --> registr command, 1 --> registr data  
+	#define Dta4015InHi 	P1_3
+	#define StrobLcd 		P1_4				// Chip select 4015 --> strobe exec for 1 -> 0
+	#define LightLCD		P1_5
+	#define Gun				P1_5
+	#define KeybLine1 		P1_6
+	#define KeybLine0 		P1_7
+	
+	#define CtrlPowerInput	P3_2
+	#define KassaRxD		P3_3
+	#define Dta4015InLo 	P3_4
+	#define ResetWDT		P3_4
+	#define KassaTxD		P3_5
+	#define ClapanLed		P3_7
+
 #else
 	#ifdef HI-TECH 
 		#include <htc.h>
-		#define Clock4015 P12  	
-		#define CmdDtaLcd P13				//Registr Select  0 --> registr command, 1 --> registr data  
-		#define StrobLcd P14				// Chip select 4015 --> strobe exec for 1 -> 0
-		#define Dta4015InLo P34
-		#define Dta4015InHi P13
-		#define KeybLine1 P16
-		#define KeybLine0 P17
+		
+		#define CtrlPowerMCU	P10
+		#define Pump			P11
+		#define Clock4015 		P12  
+		#define CmdDtaLcd 		P13				//Registr Select  0 --> registr command, 1 --> registr data  
+		#define Dta4015InHi 	P13
+		#define StrobLcd 		P14				// Chip select 4015 --> strobe exec for 1 -> 0
+		#define LightLCD		P15
+		#define Gun				P15
+		#define KeybLine1 		P16
+		#define KeybLine0 		P17
+		
+		#define CtrlPowerInput	P32
+		#define KassaRxD		P33
+		#define Dta4015InLo 	P34
+		#define ResetWDT		P34
+		#define KassaTxD		P35
+		#define ClapanLed		P37
+
+		
 	#endif
 #endif	
 
@@ -84,6 +109,10 @@
 #define INT1 		2
 #define Timer1 		3
 #define USART 		4
+
+#define CursorOn()	LcdWR(DispControl & DisplOn & CursLineOn & CursSquOff, Command)
+#define CursorOff()	LcdWR(DispControl & DisplOn & CursLineOff & CursSquOff, Command)
+
 
 
 
