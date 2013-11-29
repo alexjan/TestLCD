@@ -24,6 +24,8 @@
 
 #define HEAD_Stack 			0x70
 
+#define empty				0x11
+
 /* List Command for LCD 44780*/
 
 #define ClrScreen   		0x01		// 0b00000001
@@ -74,5 +76,14 @@
 
 #define Command 			false
 #define Data 				true
+
+/* Defination of iunterrupt number */
+
+#define INT0 		0
+#define Timer0 		1
+#define INT1 		2
+#define Timer1 		3
+#define USART 		4
+
 
 
