@@ -20,7 +20,7 @@ void main(void){
 	SP = HEAD_Stack;
   	FirstINIFunc();
 	InitLCD();
-	while(1);  
+	while(1) ResetWDT = !ResetWDT;  
 }
 
 void TimerFunc (void) interrupt Timer0 using 2{
