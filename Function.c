@@ -181,11 +181,14 @@ void putst(unsigned char *string) {
     unsigned char CharCnt = 0;
     bit EndOfString = true;
     do {
-        if (*string == '\n') EndOfString = false;
+        if (*string == '\n') {
+			LineLCD = !LineLCD;
+			EndOfString = false;
+		}
         putch(*(string++));
         if (++CharCnt > 15) {
             CharCnt = 0;
-            LineLCD = ~LineLCD;
+            LineLCD = !LineLCD;
             LineLCD ? LcdWR(SetAdressDDRAM & 0xC0, Command) : LcdWR(SetAdressDDRAM & 0x80, Command);
         }
     } while (EndOfString);
@@ -245,3 +248,7 @@ unsigned char scanch(void) {
     return KeyCode[empty];
 }
 
+void LcdSetPosition(unsigned char Position){
+	if(Position < 16)LcdWR(SetAdressDDRAM && (DispStrAdr1str + Position),Command);
+	else LcdWR(SetAdressDDRAM && (DispStrAdr2str + Position - 16));
+}

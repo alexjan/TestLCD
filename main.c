@@ -13,6 +13,7 @@ void ClrScrn (void);
 void PutBCDlong (unsigned long);
 unsigned char Keyboard(void);
 unsigned char  scanch(void);
+void LcdSetPosition(unsigned char);
 unsigned char mSecond;
 							 /*  0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F  */
 unsigned char code Kyrilica[]={						 															\
@@ -27,8 +28,8 @@ unsigned char code Kyrilica[]={						 															\
 					 * 3	 	о    п    р    с    т    у    ф    х    ц    ч    ш    щ    ъ    ы    ь    э
 					 * 4	 	ю    я                                                                          */
 
-unsigned char code *TestString = "Отладка кнопок!\n",			\
-					*TestString2 ="Push any Buttom.\n" ;
+unsigned char code *Header_str1 = "  Тест  пульта\n",			\
+				   *Header_str2 = "   версия 1.0\n" ;
 
 void main(void){
   	unsigned char counter,Var;
@@ -40,26 +41,63 @@ void main(void){
 	ET0 = true;
 	InitLCD();
 	ei();
-	putst(TestString);
-	counter = 4;
-	while(counter--)DelaymS(250);
-	putst(TestString2);
-	while(++counter < 5)DelaymS(250);
-	ClrScrn();
-	while(1){
+	putst(Header_str1);
+	putst(Header_str2);
+	counter = 10;
+	while(--counter)DelaymS(200);
+    ClrScrn();
+
+	while(1){	
+		
 		switch (Var = Keyboard())
 		{
 			case 'A':
-				putst ("Litry\n");
+				putst ("    Помощь.\n");
+				while(Var != 'C'){
+					counter = 10;
+					while(--counter)DelaymS(200);
+// 					putch('\n');
+					LcdSetPosition(0);
+					putst ("Нажмите функциональную клавишу.\n");
+					Var = Keyboard();
+					ClrScrn();
+// 					LcdSetPosition(0);
+					switch (Var)
+					{
+						case '1': putst("Тестирование клавиш.\n");
+							break;
+						case '2': putst("Вкл./Выкл. питание на колонку.\n");
+							break;
+						case '3': putst("Состояние датчика питания.\n");	
+							break;
+						case '4': putst("Вкл./Выкл. насоса.\n");
+							break;
+						case '5': putst("Вкл./Выкл. касса имп.\n");
+							break;
+						case '6': putst("Вкл./Выкл. касса пистолет.\n");
+							break;
+						case '7': putst("Состояние касса старт.\n");
+							break;
+						case '8': putst("Показать принятый пакет.\n");
+							break;
+						case 'C': ;
+							break;
+						default : putst("Не используется.\n");					
+					}													
+				};
+            				
 				break;
-			case 'B':
-				putst ("Summa\n");
+			case 'B': putst ("Summa\n");
 				break;
-			case 'C':
-				putst ("Sbros\n");
+			case 'C': putst ("Sbros\n");
 				break;
-			case 'D':
-				putst ("Pusk \n");
+			case 'D': putst ("  Тест \n");
+				
+				
+				
+				
+				
+				
 				break;
 			case 'E':
 				putst ("Stop \n");
@@ -67,7 +105,7 @@ void main(void){
 			case 'F':
 				putst ("Gun  \n");
 				break;
-			default: putch(Var);
+			default: putst("1-keyb 2-on/off power \n");
 		}
 	}  
 }
@@ -80,4 +118,3 @@ void TimerFunc (void) interrupt Timer0 {
 	}
 
 }
-
