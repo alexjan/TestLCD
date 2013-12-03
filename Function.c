@@ -7,11 +7,9 @@ void DelayuS(unsigned char);
 void ClrScrn(void);
 unsigned char scanch(void);
 void PutBCDlong(unsigned long);
-                              /*   1    2    3    4    5   sto  lit  sbr   6    7    8    9    0   pus  sum  gun empty */
-//unsigned char code KeyCode[] = {'C', '4', 'E', '4', '1', '3', '2', '5', 'F', '9', 'D', '9', '6', '8', '7', '0', 'Z'};
-						                                                                                          
-  unsigned char code KeyCode[] = {'5', 'A', 'E', '2', 'C', '3', '4', '1', '0', 'B', 'D', '7', 'F', '8', '9', '6', 'Z'};
-                            /*     5    A    E    2    C    3    4    1    0    B    D    7    F    8    9    6   */                                            
+                            /*   5   lit  sto   2   sbr   3    4    1    0   sum  pus   7   gun   8    9    6  empty */						                                                                                          
+unsigned char code KeyCode[] = {'5', 'A', 'E', '2', 'C', '3', '4', '1', '0', 'B', 'D', '7', 'F', '8', '9', '6', 'Z'};
+                            
 extern bit LineLCD;
 extern unsigned char code Kyrilica[];
 

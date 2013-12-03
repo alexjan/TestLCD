@@ -47,7 +47,6 @@ void main(void){
 	while(++counter < 5)DelaymS(250);
 	ClrScrn();
 	while(1){
-		CLRWDT();
 		switch (Var = Keyboard())
 		{
 			case 'A':
@@ -60,13 +59,13 @@ void main(void){
 				putst ("Sbros\n");
 				break;
 			case 'D':
-				putst ("Pusk\n");
+				putst ("Pusk \n");
 				break;
 			case 'E':
-				putst ("Stop\n");
+				putst ("Stop \n");
 				break;
 			case 'F':
-				putst ("Gun\n");
+				putst ("Gun  \n");
 				break;
 			default: putch(Var);
 		}
@@ -75,7 +74,7 @@ void main(void){
 
 void TimerFunc (void) interrupt Timer0 {
 	static unsigned char Counter;
-	if(++Counter > 1)	{
+	if(++Counter > 2)	{
 		Counter = 0;
 		CLRWDT();
 	}
