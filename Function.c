@@ -10,7 +10,7 @@ void PutBCDlong(unsigned long);
                             /*   5   lit  sto   2   sbr   3    4    1    0   sum  pus   7   gun   8    9    6  empty */						                                                                                          
 unsigned char code KeyCode[] = {'5', 'A', 'E', '2', 'C', '3', '4', '1', '0', 'B', 'D', '7', 'F', '8', '9', '6', 'Z'};
                             
-extern bit LineLCD;
+
 extern unsigned char code Kyrilica[];
 
 void FirstINIFunc(void) {
@@ -143,14 +143,18 @@ void putch(unsigned char Char) {
 	static unsigned char CharPos;
     if (Char > 0x7F) Char = Kyrilica[Char - 0xC0];
     if (Char == '\n') {
-        if(LineLCD = ~LineLCD) LcdWR(SetAdressDDRAM & 0xC0, Command);
+        if(CharPos < 15) LcdWR(SetAdressDDRAM & 0xC0, Command);
 			else {
 				CharPos = 0;
 				LcdWR(SetAdressDDRAM & 0x80, Command);
 			}
     } 
 	else {
-		if(++CharPos > 15) LineLCD = true;
+		if(++CharPos == 17) LcdWR(SetAdressDDRAM & 0xC0, Command);
+		else if(CharPos == 33) {
+			CharPos = 0;
+			LcdWR(SetAdressDDRAM & 0x80, Command);
+		}
 		LcdWR(Char, Data);
 	}
 }
@@ -246,7 +250,3 @@ unsigned char scanch(void) {
     return KeyCode[empty];
 }
 
-void LcdSetPosition(unsigned char Position){
-	if(Position < 16)LcdWR(SetAdressDDRAM && (DispStrAdr1str + Position),Command);
-	else LcdWR(SetAdressDDRAM && (DispStrAdr2str + Position - 16),Command);
-}

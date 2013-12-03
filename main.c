@@ -1,6 +1,6 @@
 #include "MacroDef.h"
 
- bit LineLCD;
+
 
 void DelayuS(unsigned char);
 void DelaymS(unsigned char);
@@ -34,7 +34,6 @@ unsigned char code *Header_str1 = "  Тест  пульта\n",			\
 void main(void){
   	unsigned char counter,Var;
 	di();
-	LineLCD = false;
 	SP = HEAD_Stack;
   	FirstINIFunc();
 	TR0 = true;
@@ -43,21 +42,19 @@ void main(void){
 	ei();
 	putst(Header_str1);
 	putst(Header_str2);
+	counter = 8;
+	while(--counter)DelaymS(250);
+	ClrScrn();
+// 	putch('\n');
+	putst("Test 2-line    1string\n");
+	
 	counter = 10;
 	while(--counter)DelaymS(200);
-    ClrScrn();
-
-	while(1){	
-		
-		switch (Var = Keyboard())
-		{
-			case 'A': putst("Test string for 2 line\n");
-				break;
-			case 'B': putst ("Summa  \n");
-				break;
-			default: putst("Default \n");
-		}
-	}  
+	
+	
+//     ClrScrn();
+	while(1);
+	  
 }
 
 void TimerFunc (void) interrupt Timer0 {
