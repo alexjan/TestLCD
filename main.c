@@ -32,10 +32,14 @@ unsigned char code *TestString = "Отладка кнопок!\n",			\
 
 void main(void){
   	unsigned char counter,Var;
+	di();
 	LineLCD = false;
 	SP = HEAD_Stack;
   	FirstINIFunc();
+	TR0 = true;
+	ET0 = true;
 	InitLCD();
+	ei();
 	putst(TestString);
 	counter = 4;
 	while(counter--)DelaymS(250);
@@ -43,6 +47,7 @@ void main(void){
 	while(++counter < 5)DelaymS(250);
 	ClrScrn();
 	while(1){
+		CLRWDT();
 		switch (Var = Keyboard())
 		{
 			case 'A':
@@ -68,7 +73,12 @@ void main(void){
 	}  
 }
 
-void TimerFunc (void) interrupt Timer0 using 2{
+void TimerFunc (void) interrupt Timer0 {
+	static unsigned char Counter;
+	if(++Counter > 1)	{
+		Counter = 0;
+		CLRWDT();
+	}
 
 }
 

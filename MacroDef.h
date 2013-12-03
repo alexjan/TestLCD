@@ -6,6 +6,7 @@
 	#define CmdDtaLcd P1_3				//Registr Select  0 --> registr command, 1 --> registr data  
 	#define StrobLcd P1_4				// Chip select 4015 --> strobe exec for 1 -> 0
 	#define Dta4015InLo P3_4
+	#define ResetWDT P3_4
 	#define Dta4015InHi P1_3
 	#define KeybLine1 P1_6
 	#define KeybLine0 P1_7
@@ -85,5 +86,8 @@
 #define Timer1 		3
 #define USART 		4
 
+#define CLRWDT()	ResetWDT = !ResetWDT
 
+#define ei() EA = true
+#define di() EA = false
 

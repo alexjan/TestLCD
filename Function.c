@@ -7,10 +7,11 @@ void DelayuS(unsigned char);
 void ClrScrn(void);
 unsigned char scanch(void);
 void PutBCDlong(unsigned long);
-                            /*   1    2    3    4    5   sto  lit  sbr   6    7    8    9    0   pus  sum  gun empty */
-unsigned char code KeyCode[] = {'1', '2', '3', '4', '5', 'E', 'A', 'C', '6', '7', '8', '9', '0', 'D', 'B', 'F', 'Z'};
-
-
+                              /*   1    2    3    4    5   sto  lit  sbr   6    7    8    9    0   pus  sum  gun empty */
+//unsigned char code KeyCode[] = {'C', '4', 'E', '4', '1', '3', '2', '5', 'F', '9', 'D', '9', '6', '8', '7', '0', 'Z'};
+						                                                                                          
+  unsigned char code KeyCode[] = {'5', 'A', 'E', '2', 'C', '3', '4', '1', '0', 'B', 'D', '7', 'F', '8', '9', '6', 'Z'};
+                            /*     5    A    E    2    C    3    4    1    0    B    D    7    F    8    9    6   */                                            
 extern bit LineLCD;
 extern unsigned char code Kyrilica[];
 
@@ -39,7 +40,7 @@ void FirstINIFunc(void) {
 
     PSW = 0;
 
-    TCON = 00000001;
+    TCON = 00010000;
     //     |||||||+--->  IT0
     //     ||||||+---->  IE0
     //     |||||+----->  IT1
@@ -59,11 +60,11 @@ void FirstINIFunc(void) {
     //     |+--------->  SM1
     //     +---------->  SM0
 
-    TMOD = 00100001;
-    //     |||||||+--->  TO/M0
+    TMOD = 00000001;
+    //     |||||||+--->  T0/M0
     //     ||||||+---->  T0/M1
-    //     |||||+----->  TO/CT
-    //     ||||+------>  TO/GATE
+    //     |||||+----->  T0/CT
+    //     ||||+------>  T0/GATE
     //     |||+------->  T1/M0
     //     ||+-------->  T1/M1
     //     |+--------->  T1/CT
@@ -79,7 +80,7 @@ void FirstINIFunc(void) {
     //     |+--------->  POR
     //     +---------->  SMOD
 //
-    IP = 00000001;
+    IP = 00000000;
     //   |||||||+----->  PX0
     //   ||||||+------>  PT0
     //   |||||+------->  PX1
@@ -89,7 +90,7 @@ void FirstINIFunc(void) {
     //   |+----------->
     //   +------------>
 //
-    IE = 00010011;
+    IE = 00010010;
     //   |||||||+-----> EX0
     //   ||||||+------> ET0
     //   |||||+-------> EX1
@@ -97,7 +98,7 @@ void FirstINIFunc(void) {
     //   |||+---------> ES
     //   ||+----------> ET2
     //   |+----------->
-    //   +------------>
+    //   +------------> EA
 //
     TH1 = 0xF3;
     TL1 = 0xF3;
@@ -123,7 +124,8 @@ void InitLCD(void) {
 }
 
 void LcdWR(unsigned char DataVar, unsigned char mode) {
-    unsigned char cnt, DataVarLo;
+    unsigned char cnt, DataVarLo,SaveWDT;
+	SaveWDT = Dta4015InLo;
     DataVarLo = DataVar << 4;
     for (cnt = 0; cnt < 4; cnt++) {
         DataVarLo <<= 1;
@@ -136,6 +138,7 @@ void LcdWR(unsigned char DataVar, unsigned char mode) {
     CmdDtaLcd = mode;
     StrobLcd = true;
     StrobLcd = false;
+	Dta4015InLo = SaveWDT;
 }
 
 void putch(unsigned char Char) {
@@ -199,8 +202,9 @@ unsigned char Keyboard(void) {
 }
 
 unsigned char scanch(void) {
-    unsigned char cnt,  ScanCnt;
+    unsigned char cnt,  ScanCnt, SaveWDT;
     bit PushButtom = false;
+	SaveWDT = Dta4015InLo;
     ScanCnt = 0;
     StrobLcd = false;
     Dta4015InLo = true;
@@ -223,8 +227,14 @@ unsigned char scanch(void) {
                 if (KeybLine0) {
                     Clock4015 = false;
                     Clock4015 = true;
-                } else return KeyCode[cnt + (ScanCnt << 2) + 8];
-            } else return KeyCode[cnt + (ScanCnt << 2)];
+                } else {
+					Dta4015InLo = SaveWDT;
+					return KeyCode[cnt + (ScanCnt << 2) + 8];
+				}
+            } else {
+				Dta4015InLo = SaveWDT;
+				return KeyCode[cnt + (ScanCnt << 2)];
+			}
         } while (++cnt < 4);
 
         Dta4015InHi = false;
@@ -233,6 +243,7 @@ unsigned char scanch(void) {
         Dta4015InHi = true;
 
     } while (++ScanCnt < 2);
+	Dta4015InLo = SaveWDT;
     return KeyCode[empty];
 }
 
