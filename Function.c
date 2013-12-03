@@ -140,11 +140,19 @@ void LcdWR(unsigned char DataVar, unsigned char mode) {
 }
 
 void putch(unsigned char Char) {
+	static unsigned char CharPos;
     if (Char > 0x7F) Char = Kyrilica[Char - 0xC0];
     if (Char == '\n') {
-        LineLCD = ~LineLCD;
-        LineLCD ? LcdWR(SetAdressDDRAM & 0xC0, Command) : LcdWR(SetAdressDDRAM & 0x80, Command);
-    } else LcdWR(Char, Data);
+        if(LineLCD = ~LineLCD) LcdWR(SetAdressDDRAM & 0xC0, Command);
+			else {
+				CharPos = 0;
+				LcdWR(SetAdressDDRAM & 0x80, Command);
+			}
+    } 
+	else {
+		if(++CharPos > 15) LineLCD = true;
+		LcdWR(Char, Data);
+	}
 }
 
 void DelayuS(unsigned char num) {
@@ -178,20 +186,10 @@ void PutBCDlong(unsigned long VarBCD) {
 }
 
 void putst(unsigned char *string) {
-    unsigned char CharCnt = 0;
-    bit EndOfString = true;
-    do {
-        if (*string == '\n') {
-			LineLCD = !LineLCD;
-			EndOfString = false;
-		}
-        putch(*(string++));
-        if (++CharCnt > 15) {
-            CharCnt = 0;
-            LineLCD = !LineLCD;
-            LineLCD ? LcdWR(SetAdressDDRAM & 0xC0, Command) : LcdWR(SetAdressDDRAM & 0x80, Command);
-        }
-    } while (EndOfString);
+	do {
+		putch(*(string++));
+	} while (*string != '\n');
+		putch('\n');
 }
 
 unsigned char Keyboard(void) {
@@ -250,5 +248,5 @@ unsigned char scanch(void) {
 
 void LcdSetPosition(unsigned char Position){
 	if(Position < 16)LcdWR(SetAdressDDRAM && (DispStrAdr1str + Position),Command);
-	else LcdWR(SetAdressDDRAM && (DispStrAdr2str + Position - 16));
+	else LcdWR(SetAdressDDRAM && (DispStrAdr2str + Position - 16),Command);
 }

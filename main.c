@@ -51,61 +51,11 @@ void main(void){
 		
 		switch (Var = Keyboard())
 		{
-			case 'A':
-				putst ("    Помощь.\n");
-				while(Var != 'C'){
-					counter = 10;
-					while(--counter)DelaymS(200);
-// 					putch('\n');
-					LcdSetPosition(0);
-					putst ("Нажмите функциональную клавишу.\n");
-					Var = Keyboard();
-					ClrScrn();
-// 					LcdSetPosition(0);
-					switch (Var)
-					{
-						case '1': putst("Тестирование клавиш.\n");
-							break;
-						case '2': putst("Вкл./Выкл. питание на колонку.\n");
-							break;
-						case '3': putst("Состояние датчика питания.\n");	
-							break;
-						case '4': putst("Вкл./Выкл. насоса.\n");
-							break;
-						case '5': putst("Вкл./Выкл. касса имп.\n");
-							break;
-						case '6': putst("Вкл./Выкл. касса пистолет.\n");
-							break;
-						case '7': putst("Состояние касса старт.\n");
-							break;
-						case '8': putst("Показать принятый пакет.\n");
-							break;
-						case 'C': ;
-							break;
-						default : putst("Не используется.\n");					
-					}													
-				};
-            				
+			case 'A': putst("Test string for 2 line\n");
 				break;
-			case 'B': putst ("Summa\n");
+			case 'B': putst ("Summa  \n");
 				break;
-			case 'C': putst ("Sbros\n");
-				break;
-			case 'D': putst ("  Тест \n");
-				
-				
-				
-				
-				
-				
-				break;
-			case 'E':
-				putst ("Stop \n");
-				break;
-			case 'F':
-				putst ("Gun  \n");
-				break;
-			default: putst("1-keyb 2-on/off power \n");
+			default: putst("Default \n");
 		}
 	}  
 }
