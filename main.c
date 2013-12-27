@@ -9,12 +9,17 @@ void putst(unsigned char *);
 void putch (unsigned char);
 void LcdWR(unsigned char, unsigned char);
 void InitLCD(void);
+void SetAdr (unsigned char);
 void ClrScrn (void);
 void PutBCDlong (unsigned long);
 unsigned char Keyboard(void);
 unsigned char  scanch(void);
 void LcdSetPosition(unsigned char);
-unsigned char mSecond;
+void PutBCDint(unsigned int);
+unsigned char mSecond, DelayT1;
+unsigned int CountIn, CountOut;
+static bit LOWFlagOut, HIFlagIn, HIFlagOut;
+
 							 /*  0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F  */
 unsigned char code Kyrilica[]={						 															\
 					/* 0 */		0x41,0xA0,0x42,0xA1,0xE0,0x45,0xA3,0xA4,0xA5,0xA6,0x4B,0xA7,0x4D,0x48,0x4F,\
@@ -28,40 +33,73 @@ unsigned char code Kyrilica[]={						 															\
 					 * 3	 	о    п    р    с    т    у    ф    х    ц    ч    ш    щ    ъ    ы    ь    э
 					 * 4	 	ю    я                                                                          */
 
-unsigned char code *Header_str1 = "  Тест  пульта\n",			\
-				   *Header_str2 = "   версия 1.0\n" ;
+unsigned char code *Header_str1 = "  Output -\n",			\
+				   *Header_str2 = "Incoming -\n" ;
 
 void main(void){
   	unsigned char counter,Var;
 	di();
+    CountIn = 0;
 	SP = HEAD_Stack;
   	FirstINIFunc();
 	TR0 = true;
 	ET0 = true;
-	InitLCD();
+    TR1 = true;
+ 	ET1 = true;
+    InitLCD();
 	ei();
 	putst(Header_str1);
-	putst(Header_str2);
-	counter = 8;
-	while(--counter)DelaymS(250);
-	ClrScrn();
-// 	putch('\n');
-	putst("Test 2-line    1string\n");
-	
-	counter = 10;
-	while(--counter)DelaymS(200);
-	
-	
-//     ClrScrn();
-	while(1);
-	  
+    putst(Header_str2);
+    
+    
+    
+	while(1){
+        counter = 2;
+        while(counter--)DelaymS(250);
+        SetAdr(10);
+        PutBCDint(++CountIn);
+        counter = 2;
+        while(counter--)DelaymS(250);
+        SetAdr(26);
+        PutBCDint(++CountIn);
+        
+        
+        
+        
+//         if(HIFlagIn){
+//             if(!InputCNT) HIFlagIn = false;
+//         }
+//         else if(InputCNT) {
+//             CountIn++;
+//             HIFlagIn = true;
+//         }
+//         
+//         if (CountOut){
+//             if(HIFlagOut){
+//                 OutputCNT = true;
+//                 HIFlagOut = false;
+//                 CountOut--;
+//             }
+//             else  if(HIFlagOut){
+//                 OutputCNT = false;
+//                 HIFlagOut = false;
+//             }
+//         }
+    }	  
 }
 
-void TimerFunc (void) interrupt Timer0 {
+void TimerFunc1 (void) interrupt Timer0 {
 	static unsigned char Counter;
-	if(++Counter > 2)	{
-		Counter = 0;
-		CLRWDT();
+    if(++Counter > 2)	{
+		Counter = 0;      
+        CLRWDT();
 	}
-
 }
+
+void TimerFunc2 (void) interrupt Timer1 {
+	if(++DelayT1 > 10)	{
+		DelayT1 = 0;
+        HIFlagOut = true;
+    }
+}
+

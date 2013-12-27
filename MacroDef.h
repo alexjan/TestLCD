@@ -2,14 +2,14 @@
 
 #ifdef Keil 
 	#include <Atmel/AT892051.h>
-	#define Clock4015 P1_2  
-	#define CmdDtaLcd P1_3				//Registr Select  0 --> registr command, 1 --> registr data  
-	#define StrobLcd P1_4				// Chip select 4015 --> strobe exec for 1 -> 0
+	#define Clock4015   P1_2  
+	#define CmdDtaLcd   P1_3				//Registr Select  0 --> registr command, 1 --> registr data  
+	#define StrobLcd    P1_4				// Chip select 4015 --> strobe exec for 1 -> 0
 	#define Dta4015InLo P3_4
-	#define ResetWDT P3_4
+	#define ResetWDT    P3_4
 	#define Dta4015InHi P1_3
-	#define KeybLine1 P1_6
-	#define KeybLine0 P1_7
+	#define KeybLine1   P1_6
+	#define KeybLine0   P1_7
 #else
 	#ifdef HI-TECH 
 		#include <htc.h>
@@ -91,3 +91,7 @@
 #define ei() EA = true
 #define di() EA = false
 
+#define InputCNT    P1_0            //pin 12
+#define OutputCNT   P1_1            //pin 13
+#define GunOutput   P3_7            //pin 10
+#define GunDetect   P3_5            //pin 9
