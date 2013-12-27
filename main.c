@@ -16,6 +16,7 @@ unsigned char Keyboard(void);
 unsigned char  scanch(void);
 void LcdSetPosition(unsigned char);
 void PutBCDint(unsigned int);
+unsigned int HextoBcd(unsigned int);
 unsigned char mSecond, DelayT1;
 unsigned int CountIn, CountOut;
 static bit LOWFlagOut, HIFlagIn, HIFlagOut;
@@ -33,8 +34,8 @@ unsigned char code Kyrilica[]={						 															\
 					 * 3	 	î    ï    ð    ñ    ò    ó    ô    õ    ö    ÷    ø    ù    ú    û    ü    ý
 					 * 4	 	þ    ÿ                                                                          */
 
-unsigned char code *Header_str1 = "  Output -\n",			\
-				   *Header_str2 = "Incoming -\n" ;
+unsigned char code *Header_str1 = "  Output - \n",			\
+				   *Header_str2 = "Incoming - \n" ;
 
 void main(void){
   	unsigned char counter,Var;
@@ -55,13 +56,14 @@ void main(void){
     
 	while(1){
         counter = 2;
-        while(counter--)DelaymS(250);
-        SetAdr(10);
-        PutBCDint(++CountIn);
-        counter = 2;
-        while(counter--)DelaymS(250);
-        SetAdr(26);
-        PutBCDint(++CountIn);
+        while(counter--)DelaymS(100);
+        SetAdr(11);
+        CountIn = HextoBcd(CountIn += 0x05);
+        PutBCDint(CountIn);
+//         counter = 2;
+//         while(counter--)DelaymS(250);
+//         SetAdr(27);
+//         PutBCDint(HextoBcd(CountIn++));
         
         
         

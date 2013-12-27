@@ -8,6 +8,7 @@ void ClrScrn(void);
 unsigned char scanch(void);
 void SetAdr (unsigned char);
 void PutBCDlong(unsigned long);
+unsigned int HextoBcd(unsigned int);
                             /*   5   lit  sto   2   sbr   3    4    1    0   sum  pus   7   gun   8    9    6  empty */						                                                                                          
 unsigned char code KeyCode[] = {'5', 'A', 'E', '2', 'C', '3', '4', '1', '0', 'B', 'D', '7', 'F', '8', '9', '6', 'Z'};
                             
@@ -202,21 +203,32 @@ void PutBCDlong(unsigned long VarBCD) {
 //     putch('\n');
 }
 void PutBCDint(unsigned int VarBCDint) {
-    if (VarBCDint & 0xF000) putch((unsigned char) ((VarBCDint >> 12) & 0x0F) + 0x30);
+    bit Show = false;
+    if (VarBCDint & 0xF000) {
+        putch((unsigned char) ((VarBCDint >> 12) & 0x0F) + 0x30);
+        Show = true;
+    }
     else putch(' ');
-    if (VarBCDint & 0x0F00) putch((unsigned char) ((VarBCDint >> 8) & 0x0F) + 0x30);
+    
+    if (VarBCDint & 0x0F00 || Show) {
+        putch((unsigned char) ((VarBCDint >> 8) & 0x0F) + 0x30);
+        Show = true;
+    } 
     else putch(' ');
-    if (VarBCDint & 0x00F0) putch((unsigned char) ((VarBCDint >> 4) & 0x0F) + 0x30);
+    
+    if (VarBCDint & 0x00F0 || Show) putch((unsigned char) ((VarBCDint >> 4) & 0x0F) + 0x30);
     else putch(' ');
+    
     putch(((unsigned char) (VarBCDint & 0x0F)) + 0x30);
 //     putch('\n');
 }
 
-unsigned int hexTObcd(unsigned int dat){
-    unsigned char cnt = 4;
-    while(cnt){
-        if((dat >> (--cnt << 2)) > 9) 
-    }
+unsigned int HextoBcd(unsigned int dat){
+    unsigned char cnt = 0;
+    do{
+        if((dat >> (cnt << 2) & (unsigned int)0x0F) > 9) dat += (unsigned int)0x06 << (cnt << 2);
+    }while(++cnt < 4);
+    return dat;
 }
 
 void putst(unsigned char *string) {
