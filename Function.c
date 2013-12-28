@@ -7,7 +7,7 @@ void DelayuS(unsigned char);
 void ClrScrn(void);
 unsigned char scanch(void);
 void SetAdr (unsigned char);
-void PutBCDlong(unsigned long);
+// void PutBCDlong(unsigned long);
 unsigned int HextoBcd(unsigned int);
                             /*   5   lit  sto   2   sbr   3    4    1    0   sum  pus   7   gun   8    9    6  empty */						                                                                                          
 unsigned char code KeyCode[] = {'5', 'A', 'E', '2', 'C', '3', '4', '1', '0', 'B', 'D', '7', 'F', '8', '9', '6', 'Z'};
@@ -15,6 +15,7 @@ unsigned char code KeyCode[] = {'5', 'A', 'E', '2', 'C', '3', '4', '1', '0', 'B'
 
 extern unsigned char code Kyrilica[];
 static unsigned char CharPos;
+extern  bit BreakFlag;
 
 void FirstINIFunc(void) {
 
@@ -155,20 +156,23 @@ void SetAdr (unsigned char adr){
 
 
 void putch(unsigned char Char) {
-	
-    if (Char > 0x7F) Char = Kyrilica[Char - 0xC0];
     if (Char == '\n') {
         if(CharPos < 16) CharPos = 16;
         else CharPos = 0;
         SetAdr(CharPos);
     } 
 	else {
-		if(++CharPos == 16) SetAdr(16);
-		else if(CharPos == 32) {
-			CharPos = 0;
-			SetAdr(0);
-		}
+        if (Char > 0x7F) Char = Kyrilica[Char - 0xC0];
 		LcdWR(Char, Data);
+        switch(++CharPos){
+            case 16 : SetAdr(16);
+                break;
+            case 32 : SetAdr(0);
+                      CharPos = 0;  
+                break;
+            default : ;
+        }
+        
 	}
 }
 
@@ -186,22 +190,23 @@ void DelaymS(unsigned char number) {
 
 void ClrScrn(void) {
     LcdWR(ClrScreen, Command);
+    CharPos = 0;
     DelaymS(5);
 }
 
-void PutBCDlong(unsigned long VarBCD) {
-    if (VarBCD & 0xF00000) putch((unsigned char) ((VarBCD >> 20) & 0x0F) + 0x30);
-    else putch(' ');
-    if (VarBCD & 0x0F0000) putch((unsigned char) ((VarBCD >> 16) & 0x0F) + 0x30);
-    else putch(' ');
-    if (VarBCD & 0x00F000) putch((unsigned char) ((VarBCD >> 12) & 0x0F) + 0x30);
-    else putch(' ');
-    putch(((unsigned char) ((VarBCD >> 8) & 0x0F)) + 0x30);
-    putch('.');
-    putch(((unsigned char) ((VarBCD >> 4) & 0x0F)) + 0x30);
-    putch(((unsigned char) (VarBCD & 0x0F)) + 0x30);
-//     putch('\n');
-}
+// void PutBCDlong(unsigned long VarBCD) {
+//     if (VarBCD & 0xF00000) putch((unsigned char) ((VarBCD >> 20) & 0x0F) + 0x30);
+//     else putch(' ');
+//     if (VarBCD & 0x0F0000) putch((unsigned char) ((VarBCD >> 16) & 0x0F) + 0x30);
+//     else putch(' ');
+//     if (VarBCD & 0x00F000) putch((unsigned char) ((VarBCD >> 12) & 0x0F) + 0x30);
+//     else putch(' ');
+//     putch(((unsigned char) ((VarBCD >> 8) & 0x0F)) + 0x30);
+//     putch('.');
+//     putch(((unsigned char) ((VarBCD >> 4) & 0x0F)) + 0x30);
+//     putch(((unsigned char) (VarBCD & 0x0F)) + 0x30);
+// //     putch('\n');
+// }
 void PutBCDint(unsigned int VarBCDint) {
     bit Show = false;
     if (VarBCDint & 0xF000) {
@@ -239,10 +244,20 @@ void putst(unsigned char *string) {
 }
 
 unsigned char Keyboard(void) {
-    unsigned char Buttom;
-	while ((Buttom = scanch()) == KeyCode[empty]) DelaymS(50);	
-	DelaymS(30);
-	while (Buttom == scanch())DelaymS(50); 
+    unsigned char Buttom,TimeCnt = 0;
+	while ((Buttom = scanch()) == KeyCode[empty]) {
+        DelaymS(20);
+        if(BreakFlag){
+            BreakFlag = false;
+            return Buttom;
+        }
+        
+    }        
+	DelaymS(20);
+	while (Buttom == scanch()){
+        if(++TimeCnt < 15)DelaymS(20);
+        else return Buttom;
+    }
 	return Buttom;
 }
 

@@ -17,9 +17,10 @@ unsigned char  scanch(void);
 void LcdSetPosition(unsigned char);
 void PutBCDint(unsigned int);
 unsigned int HextoBcd(unsigned int);
-unsigned char mSecond, DelayT1;
+unsigned char mSecond, DelayT1, CharK;
 unsigned int CountIn, CountOut;
-static bit LOWFlagOut, HIFlagIn, HIFlagOut;
+static bit LOWFlagOut, HIFlagIn, HIFlagOut, Gun, RefreshBit, RunOutImp;
+bit BreakFlag;
 
 							 /*  0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F  */
 unsigned char code Kyrilica[]={						 															\
@@ -34,11 +35,11 @@ unsigned char code Kyrilica[]={						 															\
 					 * 3	 	î    ï    ð    ñ    ò    ó    ô    õ    ö    ÷    ø    ù    ú    û    ü    ý
 					 * 4	 	þ    ÿ                                                                          */
 
-unsigned char code *Header_str1 = "  Output - \n",			\
-				   *Header_str2 = "Incoming - \n" ;
+unsigned char code *Header_str1 = "Out -> \n",			\
+				   *Header_str2 = " In -> \n" ;
 
 void main(void){
-  	unsigned char counter,Var;
+//   	unsigned char counter,Var;
 	di();
     CountIn = 0;
 	SP = HEAD_Stack;
@@ -50,23 +51,52 @@ void main(void){
     InitLCD();
 	ei();
 	putst(Header_str1);
+//     counter = 8;
+//     while(counter--)DelaymS(250);
     putst(Header_str2);
-    
-    
-    
+    SetAdr(6);
+    PutBCDint(CountOut);
+    SetAdr(22);
+    PutBCDint(CountIn);
+    SetAdr(13); 
+    if(Gun) putst("Off\n");
+    else putst("On \n");
+   
 	while(1){
-        counter = 2;
-        while(counter--)DelaymS(100);
-        SetAdr(11);
-        CountIn = HextoBcd(CountIn += 0x05);
-        PutBCDint(CountIn);
+       
+        
 //         counter = 2;
 //         while(counter--)DelaymS(250);
 //         SetAdr(27);
 //         PutBCDint(HextoBcd(CountIn++));
+//         putch(Keyboard());
         
         
-        
+            switch(Keyboard()){
+                case '6':     
+                    RunOutImp = true;
+                    break;
+                case '8':
+                    SetAdr(6);
+                    PutBCDint(CountOut = HextoBcd(CountOut += 0x100));
+                    break;
+                case '3': 
+                    SetAdr(13); 
+                    if(Gun = !Gun) putst("Off\n");
+                    else putst("On \n");
+                    break;  
+                 case 'Z':
+                     SetAdr(22);
+                     PutBCDint(CountIn = HextoBcd(CountIn));
+                     SetAdr(29); 
+                     if(GunDetect) putst("Off\n");
+                     else putst("On \n");
+                     break;
+            default : ;
+            }
+            
+            
+            
         
 //         if(HIFlagIn){
 //             if(!InputCNT) HIFlagIn = false;
@@ -99,7 +129,15 @@ void TimerFunc1 (void) interrupt Timer0 {
 }
 
 void TimerFunc2 (void) interrupt Timer1 {
-	if(++DelayT1 > 10)	{
+    static bit RDimp;
+    if(++DelayT1 > 10)	{
+        if(RDimp && InputCNT){
+            CountIn++;
+            RDimp = false;
+        }
+        else if (!InputCNT) RDimp = true;
+        GunOutput = Gun;
+        BreakFlag = true;
 		DelayT1 = 0;
         HIFlagOut = true;
     }

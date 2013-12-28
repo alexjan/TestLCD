@@ -91,7 +91,7 @@
 #define ei() EA = true
 #define di() EA = false
 
-#define InputCNT    P1_0            //pin 12
-#define OutputCNT   P1_1            //pin 13
-#define GunOutput   P3_7            //pin 10
-#define GunDetect   P3_5            //pin 9
+#define GunOutput    P1_0            //pin 12
+#define OutputCNT    P1_1            //pin 13
+#define GunDetect    P3_7            //pin 11
+#define InputCNT     P3_5            //pin 9
